@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasCurrentTenantLabel;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
@@ -16,7 +17,7 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Jetstream\HasTeams;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements HasCurrentTenantLabel, HasTenants
+class User extends Authenticatable implements FilamentUser, HasCurrentTenantLabel, HasTenants
 {
     use HasApiTokens;
 
@@ -58,6 +59,11 @@ class User extends Authenticatable implements HasCurrentTenantLabel, HasTenants
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->allTeams()->isNotEmpty();
+    }
 
     public function canAccessTenant(Model $tenant): bool
     {

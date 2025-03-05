@@ -11,16 +11,22 @@ class EditTeam extends EditTenantProfile
 {
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
-    protected static string $layout = 'filament-panels::components.layout.simple';
-
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->label('Nome')
-                    ->required()
-                    ->autofocus(),
+                Forms\Components\Section::make('Nome do time')
+                    ->description('O nome do time e informações adicionais.')
+                    ->aside()
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nome do time')
+                            ->required(),
+                    ]),
+
+                Forms\Components\Livewire::make(EditTeam\Components\Invitation::class),
+                Forms\Components\Livewire::make(EditTeam\Components\PendingInvitations::class)->lazy(),
+                Forms\Components\Livewire::make(EditTeam\Components\Members::class)->lazy(),
             ]);
     }
 
