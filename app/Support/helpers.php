@@ -26,3 +26,14 @@ if (! function_exists('App\Support\tenant')) {
         });
     }
 }
+
+if (! function_exists('App\Support\html')) {
+    function html(?string $html = null): ?\Illuminate\Support\HtmlString
+    {
+        if (! $html) {
+            return null;
+        }
+
+        return new \Illuminate\Support\HtmlString($html);
+    }
+}

@@ -6,6 +6,7 @@ use App\Actions\Jetstream\InviteTeamMember;
 use App\Models\TeamInvitation;
 use App\Models\User;
 use Closure;
+use Filament\AvatarProviders\UiAvatarsProvider;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
@@ -15,6 +16,8 @@ use Filament\Pages\Tenancy\EditTenantProfile;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Validation\ValidationException;
+
+use function App\Support\html;
 
 /**
  * @property-read Forms\ComponentContainer $form
@@ -142,18 +145,21 @@ class EditTeam extends EditTenantProfile
                             ->label(false)
                             ->columns(2)
                             ->schema([
-                                // TODO: Add User card custom component
                                 Infolists\Components\Split::make([])
+                                    ->verticallyAlignCenter()
                                     ->schema([
                                         Infolists\Components\ImageEntry::make('avatar')
                                             ->label(false)
                                             ->circular()
-                                            ->size(60)
-                                            ->state('https://ui-avatars.com/api/?name=S&color=FFFFFF&background=09090b')
+                                            ->size(50)
+                                            ->state(
+                                                fn (User $record, UiAvatarsProvider $provider) => $provider->get($record)
+                                            )
                                             ->grow(false),
 
-                                        Infolists\Components\TextEntry::make('name')
-                                            ->label(false),
+                                        Infolists\Components\TextEntry::make('email')
+                                            ->label(fn (User $record) => $record->name)
+                                            ->extraEntryWrapperAttributes(['class' => html('[&>.grid]:gap-y-0')]),
                                     ]),
 
                                 Infolists\Components\Actions::make([])
@@ -166,6 +172,7 @@ class EditTeam extends EditTenantProfile
                                                 $record->teams()->detach($this->team);
                                             }),
                                     ])
+                                    ->verticallyAlignCenter()
                                     ->alignEnd(),
                             ]),
                     ])->visible(fn () => $this->tenant->users->isNotEmpty()),
