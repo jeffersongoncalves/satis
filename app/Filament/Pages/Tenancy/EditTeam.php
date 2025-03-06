@@ -168,9 +168,9 @@ class EditTeam extends EditTenantProfile
                                             ->label('Remover')
                                             ->link()
                                             ->requiresConfirmation()
-                                            ->action(function (User $record) {
-                                                $record->teams()->detach($this->team);
-                                            }),
+                                            ->action(
+                                                fn (User $record) => $record->teams()->detach($this->tenant)
+                                            ),
                                     ])
                                     ->verticallyAlignCenter()
                                     ->alignEnd(),
