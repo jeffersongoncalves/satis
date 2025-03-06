@@ -2,14 +2,37 @@
 
 namespace App\Filament\Pages\Tenancy;
 
+use App\Actions\Jetstream\InviteTeamMember;
+use App\Models\TeamInvitation;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Pages\Tenancy\EditTenantProfile;
+use Filament\Support\Enums\Alignment;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Validation\ValidationException;
 
+/**
+ * @property-read Forms\ComponentContainer $form
+ * @property-read Forms\ComponentContainer $inviteForm
+ */
 class EditTeam extends EditTenantProfile
 {
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
+
+    protected static string $view = 'filament.pages.tenancy.edit-team';
+
+    public array $invitation = [];
+
+    public function mount(): void
+    {
+        $this->inviteForm->fill();
+
+        parent::mount();
+    }
 
     public function form(Form $form): Form
     {
@@ -22,12 +45,152 @@ class EditTeam extends EditTenantProfile
                         Forms\Components\TextInput::make('name')
                             ->label('Nome do time')
                             ->required(),
-                    ]),
+                    ])
+                    ->footerActions([
+                        Forms\Components\Actions\Action::make('save')
+                            ->label('Salvar')
+                            ->action('save'),
+                    ])
+                    ->footerActionsAlignment(Alignment::End),
+            ])
+            ->statePath('data');
+    }
 
-                Forms\Components\Livewire::make(EditTeam\Components\Invitation::class),
-                Forms\Components\Livewire::make(EditTeam\Components\PendingInvitations::class)->lazy(),
-                Forms\Components\Livewire::make(EditTeam\Components\Members::class)->lazy(),
+    public function inviteForm(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Section::make('Adicionar membro')
+                    ->description('Adicionar um novo membro ao time, permitindo que ele acesse as licenças e recursos do time.')
+                    ->aside()
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Placeholder::make('add-member-instructions')
+                            ->label('Por favor, insira o endereço de e-mail da pessoal que você deseja adicionar ao time. O convite será enviado automaticamente.'),
+
+                        Forms\Components\TextInput::make('email')
+                            ->label('E-mail')
+                            ->email()
+                            ->required(),
+                    ])
+                    ->footerActions([
+                        Forms\Components\Actions\Action::make('invite')
+                            ->label('Enviar convite')
+                            ->action('invite'),
+                    ])
+                    ->footerActionsAlignment(Alignment::End),
+            ])
+            ->statePath('invitation');
+    }
+
+    public function pendingInvitationsInfolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->record($this->tenant)
+            ->schema([
+                Infolists\Components\Section::make('Convites pendentes')
+                    ->description('Essas pessoas foram convidadas para sua equipe e receberam um e-mail de convite. Elas podem se juntar à equipe aceitando o convite por e-mail.')
+                    ->aside()
+                    ->schema([
+                        Infolists\Components\RepeatableEntry::make('teamInvitations')
+                            ->label(false)
+                            ->columns(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('email')
+                                    ->label(false),
+
+                                Infolists\Components\Actions::make([])
+                                    ->actions([
+                                        Infolists\Components\Actions\Action::make('cancel-invitation')
+                                            ->label('Cancelar')
+                                            ->link()
+                                            ->requiresConfirmation()
+                                            ->action(function (TeamInvitation $record) {
+                                                $record->delete();
+                                            }),
+                                    ])
+                                    ->alignEnd(),
+                            ]),
+                    ])->visible(fn () => $this->tenant->teamInvitations->isNotEmpty()),
             ]);
+    }
+
+    public function membersInfolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->record($this->tenant)
+            ->schema([
+                Infolists\Components\Section::make('Membros do time')
+                    ->description('Todas as pessoas que fazem parte do time.')
+                    ->aside()
+                    ->schema([
+                        Infolists\Components\RepeatableEntry::make('users')
+                            ->label(false)
+                            ->columns(2)
+                            ->schema([
+                                // TODO: Add User card custom component
+                                Infolists\Components\Split::make([])
+                                    ->schema([
+                                        Infolists\Components\ImageEntry::make('avatar')
+                                            ->label(false)
+                                            ->circular()
+                                            ->size(60)
+                                            ->state('https://ui-avatars.com/api/?name=S&color=FFFFFF&background=09090b')
+                                            ->grow(false),
+
+                                        Infolists\Components\TextEntry::make('name')
+                                            ->label(false),
+                                    ]),
+
+                                Infolists\Components\Actions::make([])
+                                    ->actions([
+                                        Infolists\Components\Actions\Action::make('remove-member')
+                                            ->label('Remover')
+                                            ->link()
+                                            ->requiresConfirmation()
+                                            ->action(function (User $record) {
+                                                $record->teams()->detach($this->team);
+                                            }),
+                                    ])
+                                    ->alignEnd(),
+                            ]),
+                    ])->visible(fn () => $this->tenant->users->isNotEmpty()),
+            ]);
+    }
+
+    protected function getForms(): array
+    {
+        return [
+            'form',
+            'inviteForm',
+        ];
+    }
+
+    public function invite(): void
+    {
+        $data = $this->inviteForm->getState();
+
+        try {
+            app(InviteTeamMember::class)->invite(
+                user: auth()->user(),
+                team: $this->tenant,
+                email: $data['email'],
+                role: 'user',
+            );
+
+            Notification::make()
+                ->title('Convite enviado')
+                ->body(sprintf('O convite foi enviado para o email %s.', $data['email']))
+                ->success()
+                ->send();
+
+        } catch (ValidationException $exception) {
+            Notification::make()
+                ->title('Erro ao enviar convite')
+                ->body($exception->getMessage())
+                ->danger()
+                ->send();
+        }
     }
 
     public static function getLabel(): string
@@ -38,10 +201,5 @@ class EditTeam extends EditTenantProfile
     public function getTitle(): string|Htmlable
     {
         return 'Editar '.$this->tenant->name;
-    }
-
-    protected function afterSave()
-    {
-        $this->redirect(filament()->getUrl(tenant: $this->tenant));
     }
 }
