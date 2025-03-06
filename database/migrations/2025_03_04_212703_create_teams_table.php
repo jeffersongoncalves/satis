@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->index();
             $table->string('name');
             $table->boolean('personal_team');
+            $table->integer('seats')->nullable();
             $table->timestamps();
         });
     }

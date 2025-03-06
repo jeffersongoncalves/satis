@@ -5,6 +5,7 @@ namespace App\Filament\Pages\Tenancy;
 use App\Actions\Jetstream\InviteTeamMember;
 use App\Models\TeamInvitation;
 use App\Models\User;
+use Closure;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
@@ -41,10 +42,23 @@ class EditTeam extends EditTenantProfile
                 Forms\Components\Section::make('Nome do time')
                     ->description('O nome do time e informações adicionais.')
                     ->aside()
+                    ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->label('Nome do time')
-                            ->required(),
+                            ->required()
+                            ->columnSpanFull(),
+
+                        Forms\Components\TextInput::make('seats')
+                            ->label('Número de assentos')
+                            ->numeric()
+                            ->rule(
+                                fn (): Closure => function (string $attribute, int $value, Closure $fail) {
+                                    if ($value < ($count = $this->tenant->users->count())) {
+                                        $fail("O número de assentos deve ser maior ou igual ao número de membros do time ({$count}).");
+                                    }
+                                },
+                            ),
                     ])
                     ->footerActions([
                         Forms\Components\Actions\Action::make('save')
