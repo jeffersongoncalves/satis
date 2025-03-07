@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "composer/satis": "3.0.x-dev",
         "filament/filament": "^3.2",
         "laravel/framework": "^12.0",
         "laravel/jetstream": "^5.3",
@@ -73,6 +74,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
+            "composer/satis": true,
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
         }

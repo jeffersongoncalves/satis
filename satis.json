@@ -1,0 +1,18 @@
+{
+    "name": "filament-community/satis",
+    "homepage": "https://filament-community.saade.dev",
+    "output-dir": "public/composer",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:saade/filament-opening-hours.git"
+        }
+    ],
+    "require": {
+        "saade/filament-opening-hours": "*"
+    },
+    "archive": {
+        "directory": "dist",
+        "skip-dev": true
+    }
+}
