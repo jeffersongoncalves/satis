@@ -1,6 +1,6 @@
 {
     "name": "filament-community/satis",
-    "homepage": "https://filament-community.saade.dev",
+    "homepage": "https://filament-community.saade.dev/composer",
     "output-dir": "public/composer",
     "repositories": [
         {
