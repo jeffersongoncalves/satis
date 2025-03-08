@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Composer;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
-class PackagesV2Controller extends Controller
+class PackagesV2Controller
 {
     public function __invoke(Request $request, string $vendor, string $package)
     {

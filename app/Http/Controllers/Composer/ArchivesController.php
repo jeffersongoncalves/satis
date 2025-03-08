@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Composer;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class ArchivesController extends Controller
+class ArchivesController
 {
     public function __invoke(Request $request, string $vendor, string $package, string $file)
     {
