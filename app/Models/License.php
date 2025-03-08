@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class License extends Model
 {
     protected $fillable = [
+        'name',
         'type',
-        'composer_url',
-        'composer_username',
-        'composer_password',
+        'url',
+        'username',
+        'password',
     ];
 
     protected function casts(): array

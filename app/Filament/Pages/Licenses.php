@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Enums\LicenseType;
 use App\Models\License;
 use App\Models\Team;
+use Closure;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
@@ -41,7 +42,25 @@ class Licenses extends Page
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Nome')
+                            ->label(
+                                fn (Forms\Get $get) => match ($get('type')) {
+                                    LicenseType::Composer => 'vendor/package',
+                                    LicenseType::Individual => 'Nome do Produto',
+                                }
+                            )
+                            ->rule(
+                                fn (Forms\Get $get): Closure => function (string $attribute, string $value, Closure $fail) use ($get) {
+                                    if ($get('type') !== LicenseType::Composer) {
+                                        return;
+                                    }
+
+                                    if (preg_match('/^[a-z0-9-]+\/[a-z0-9-]+$/', $value)) {
+                                        return;
+                                    }
+
+                                    $fail('O nome do pacote deve seguir o formato "vendor/package".');
+                                },
+                            )
                             ->required(),
 
                         Forms\Components\ToggleButtons::make('type')
@@ -101,7 +120,7 @@ class Licenses extends Page
                         Forms\Components\Actions\Action::make('create')
                             ->label('Adicionar')
                             ->action(
-                                fn (Team $record, Forms\Get $get) => $record->licenses()->create($get('../data'))
+                                fn (Team $record) => $record->licenses()->create($this->form->getState())
                             ),
                     ]),
             ])
@@ -121,7 +140,7 @@ class Licenses extends Page
                             ->icon(fn (License $record) => $record->type->getIcon())
                             ->columns(3)
                             ->schema([
-                                Infolists\Components\TextEntry::make('composer_url')
+                                Infolists\Components\TextEntry::make('url')
                                     ->label(
                                         fn (License $record) => match ($record->type) {
                                             LicenseType::Composer => 'URL do Repositório',
@@ -129,21 +148,23 @@ class Licenses extends Page
                                         }
                                     ),
 
-                                Infolists\Components\TextEntry::make('composer_username')
+                                Infolists\Components\TextEntry::make('username')
                                     ->label(
                                         fn (License $record) => match ($record->type) {
                                             LicenseType::Composer => 'Username',
                                             LicenseType::Individual => 'Email',
                                         }
-                                    ),
+                                    )
+                                    ->getStateUsing('[Redacted]'),
 
-                                Infolists\Components\TextEntry::make('composer_password')
+                                Infolists\Components\TextEntry::make('password')
                                     ->label(
                                         fn (License $record) => match ($record->type) {
                                             LicenseType::Composer => 'Password',
                                             LicenseType::Individual => 'Senha',
                                         }
-                                    ),
+                                    )
+                                    ->getStateUsing('[Redacted]'),
                             ]),
                     ]),
             ]);
