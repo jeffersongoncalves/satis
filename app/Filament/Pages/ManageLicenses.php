@@ -16,11 +16,13 @@ use Livewire\Attributes\Locked;
 use function App\Support\enum_equals;
 use function App\Support\tenant;
 
-class Licenses extends Page
+class ManageLicenses extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament.pages.licenses';
+
+    protected static ?string $slug = 'licenses';
 
     #[Locked]
     public ?Team $record = null;
