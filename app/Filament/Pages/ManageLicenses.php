@@ -125,7 +125,11 @@ class ManageLicenses extends Page
                         Forms\Components\Actions\Action::make('create')
                             ->label('Adicionar')
                             ->action(
-                                fn (Team $record) => $record->licenses()->create($this->form->getState())
+                                function (Team $record) {
+                                    $license = $record->licenses()->create($this->form->getState());
+                                    $this->form->fill();
+                                    return $license;
+                                }
                             ),
                     ]),
             ])
