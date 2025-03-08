@@ -1,7 +1,7 @@
 {
     "name": "filament-community/satis",
-    "homepage": "https://filament-community.saade.dev/composer",
-    "output-dir": "public/composer",
+    "homepage": "https://community-license-manager.test",
+    "output-dir": "storage/app/private/satis",
     "repositories": [
         {
             "type": "vcs",
@@ -12,7 +12,7 @@
         "saade/filament-opening-hours": "*"
     },
     "archive": {
-        "directory": "dist",
+        "directory": "archives",
         "skip-dev": true
     }
 }
