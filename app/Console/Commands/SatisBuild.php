@@ -36,12 +36,15 @@ class SatisBuild extends Command
             ]
         );
 
+        $satisConfig['repositories'] = $repositories->toArray();
+
         $require = $licenses->mapWithKeys(
             fn (License $license) => [$license->name => '*']
         );
 
-        $satisConfig['repositories'] = $repositories->toArray();
-        $satisConfig['require'] = $require->toArray();
+        if ($require->isNotEmpty()) {
+            $satisConfig['require'] = (object) $require->toArray();
+        }
 
         $configPath = storage_path('app/private/satis/config.json');
 
