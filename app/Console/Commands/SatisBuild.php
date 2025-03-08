@@ -55,7 +55,7 @@ class SatisBuild extends Command
         $this->info('Satis configuration file generated successfully');
         $this->warn('Building satis repository...');
 
-        $process = Process::run("php vendor/bin/satis build $configPath");
+        $process = Process::timeout(600)->run("php vendor/bin/satis build $configPath");
 
         if ($process->failed()) {
             $this->error('Failed to build satis repository.');
