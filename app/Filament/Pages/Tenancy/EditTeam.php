@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Tenancy;
 
 use App\Actions\InviteTeamMember;
+use App\Actions\RemoveTeamMember;
 use App\Models\TeamInvitation;
 use App\Models\User;
 use Closure;
@@ -169,7 +170,7 @@ class EditTeam extends EditTenantProfile
                                             ->link()
                                             ->requiresConfirmation()
                                             ->action(
-                                                fn (User $record) => $record->teams()->detach($this->tenant)
+                                                fn (User $record) => app(RemoveTeamMember::class)->remove($this->tenant, $record)
                                             ),
                                     ])
                                     ->verticallyAlignCenter()
