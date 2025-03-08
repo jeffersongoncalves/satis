@@ -54,12 +54,13 @@ class SatisBuild extends Command
         $process = Process::run("php vendor/bin/satis build $configPath");
 
         if ($process->failed()) {
-            $this->error('Failed to build satis repository');
+            $this->error('Failed to build satis repository.');
+            $this->error($process->errorOutput());
 
             return self::FAILURE;
         }
 
-        $this->info('Satis repository built successfully');
+        $this->info('Satis repository built successfully!');
 
         return self::SUCCESS;
     }
