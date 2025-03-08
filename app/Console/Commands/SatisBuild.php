@@ -29,7 +29,8 @@ class SatisBuild extends Command
                 'options' => [
                     'http' => [
                         'header' => [
-                            'Authorization: Basic '.base64_encode("{$license->username}:{$license->password}"),
+                            'username' => $license->username,
+                            'password' => $license->password,
                         ],
                     ],
                 ],
