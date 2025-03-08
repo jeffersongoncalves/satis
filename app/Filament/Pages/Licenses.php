@@ -133,6 +133,7 @@ class Licenses extends Page
             ->record($this->record)
             ->schema([
                 Infolists\Components\RepeatableEntry::make('licenses')
+                    ->label(false)
                     ->schema([
                         Infolists\Components\Section::make()
                             ->heading(fn (License $record) => $record->name)

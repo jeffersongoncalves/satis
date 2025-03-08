@@ -23,6 +23,9 @@ class License extends Model
         ];
     }
 
+    /**
+     * Get the team that the license belongs to.
+     */
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);

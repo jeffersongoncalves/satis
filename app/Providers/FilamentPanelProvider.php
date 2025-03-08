@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Filament\Pages;
 use App\Filament\Pages\Tenancy\EditTeam;
 use App\Filament\Pages\Tenancy\RegisterTeam;
 use App\Models\Team;
@@ -16,6 +17,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class FilamentPanelProvider extends PanelProvider
@@ -25,14 +27,19 @@ class FilamentPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
             ->login()
             ->profile()
             ->tenant(Team::class)
+            ->tenantRoutePrefix('teams')
             ->tenantRegistration(RegisterTeam::class)
             ->tenantProfile(EditTeam::class)
             ->topNavigation()
             ->viteTheme('resources/css/filament/admin/theme.css')
+            ->routes(function () {
+                Route::get('teams/accept/{invitation}', Pages\AcceptInvitation::class)
+                    ->middleware(['signed'])
+                    ->name('team-invitations.accept');
+            })
             ->discoverResources(
                 in: app_path('Filament/Resources'),
                 for: 'App\\Filament\\Resources'

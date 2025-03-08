@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages\Tenancy;
 
-use App\Actions\Jetstream\InviteTeamMember;
+use App\Actions\InviteTeamMember;
 use App\Models\TeamInvitation;
 use App\Models\User;
 use Closure;
@@ -193,10 +193,8 @@ class EditTeam extends EditTenantProfile
 
         try {
             app(InviteTeamMember::class)->invite(
-                user: auth()->user(),
                 team: $this->tenant,
-                email: $data['email'],
-                role: 'user',
+                email: $data['email']
             );
 
             Notification::make()

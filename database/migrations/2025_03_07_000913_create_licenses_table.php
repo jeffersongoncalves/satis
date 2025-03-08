@@ -15,7 +15,9 @@ return new class extends Migration
             $table->string('url');
             $table->string('username');
             $table->string('password');
+
             $table->foreignId('team_id')->constrained('teams')->cascadeOnDelete();
+
             $table->timestamps();
         });
     }

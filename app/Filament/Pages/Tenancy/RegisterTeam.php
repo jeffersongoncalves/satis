@@ -25,10 +25,7 @@ class RegisterTeam extends RegisterTenant
     {
         $user = User::find(1);
 
-        return $user->ownedTeams()->create([
-            ...$data,
-            'personal_team' => true,
-        ]);
+        return $user->ownedTeams()->create($data);
     }
 
     public static function getLabel(): string

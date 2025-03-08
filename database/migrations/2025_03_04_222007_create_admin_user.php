@@ -24,12 +24,9 @@ return new class extends Migration
         tap(
             User::create($credentials),
             function (User $user): void {
-                $team = $user->ownedTeams()->create([
-                    'name' => 'Admin Team',
-                    'personal_team' => true,
+                $user->ownedTeams()->create([
+                    'name' => 'Comunidade',
                 ]);
-
-                $user->switchTeam($team);
             }
         );
     }

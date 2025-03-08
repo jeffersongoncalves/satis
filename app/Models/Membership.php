@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
-use Laravel\Jetstream\Membership as JetstreamMembership;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class Membership extends JetstreamMembership
+class Membership extends Pivot
 {
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
+    protected $table = 'team_user';
+
     public $incrementing = true;
 }
