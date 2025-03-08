@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Composer;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
 class PackagesController
 {
-    public function __invoke(Request $request)
+    public function __invoke()
     {
         $packages = File::json(storage_path('app/private/satis/packages.json'));
 
