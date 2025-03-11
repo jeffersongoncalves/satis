@@ -168,7 +168,12 @@ class ManageLicenses extends Page
                                             LicenseType::Individual => 'Email',
                                         }
                                     )
-                                    ->getStateUsing('[Redacted]'),
+                                    ->getStateUsing(
+                                        fn (License $record) => match ($record->type) {
+                                            LicenseType::Composer => '[Redacted]',
+                                            LicenseType::Individual => $record->username,
+                                        }
+                                    ),
 
                                 Infolists\Components\TextEntry::make('password')
                                     ->label(
@@ -177,7 +182,12 @@ class ManageLicenses extends Page
                                             LicenseType::Individual => 'Senha',
                                         }
                                     )
-                                    ->getStateUsing('[Redacted]'),
+                                    ->getStateUsing(
+                                        fn (License $record) => match ($record->type) {
+                                            LicenseType::Composer => '[Redacted]',
+                                            LicenseType::Individual => $record->password,
+                                        }
+                                    ),
                             ]),
                     ]),
             ]);
