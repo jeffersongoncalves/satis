@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 
 class User extends Authenticatable implements FilamentUser, HasCurrentTenantLabel, HasTenants
 {
@@ -49,7 +50,7 @@ class User extends Authenticatable implements FilamentUser, HasCurrentTenantLabe
 
     public function canAccessTenant(Model $tenant): bool
     {
-        return $this->allTeams()->contains($tenant);
+        return Gate::allows('view', $tenant);
     }
 
     public function getTenants(Panel $panel): array|Collection
