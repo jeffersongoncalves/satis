@@ -38,6 +38,17 @@ if (! function_exists('App\Support\html')) {
     }
 }
 
+if (! function_exists('blade')) {
+    function blade(?string $string = null, array $data = [], bool $deleteCachedView = false): ?string
+    {
+        if (! $string) {
+            return null;
+        }
+
+        return \Illuminate\Support\Facades\Blade::render($string, $data, $deleteCachedView);
+    }
+}
+
 if (! function_exists('App\Support\enum_equals')) {
     function enum_equals(\BackedEnum|string|int|null $value, \BackedEnum|array $enum): bool
     {

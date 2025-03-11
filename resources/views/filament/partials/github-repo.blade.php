@@ -1,0 +1,9 @@
+<x-filament::button
+    tag="a"
+    href="https://github.com/saade/filamentbr-community-licenses"
+    target="_blank"
+    color="gray"
+    icon="heroicon-o-arrow-top-right-on-square"
+>
+    GitHub
+</x-filament::button>
