@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 
 use function App\Support\enum_equals;
@@ -37,6 +38,10 @@ class ManageLicenses extends Page
 
     public function form(Form $form): Form
     {
+        if (Gate::denies('create', License::class)) {
+            return $form;
+        }
+
         return $form
             ->model($this->record)
             ->schema([
