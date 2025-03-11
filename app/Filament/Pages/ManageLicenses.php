@@ -37,9 +37,6 @@ class ManageLicenses extends Page
 
     public function form(Form $form): Form
     {
-        if ($this->record->user_id !== auth()->id()){
-            return $form;
-        }
         return $form
             ->model($this->record)
             ->schema([
@@ -128,6 +125,7 @@ class ManageLicenses extends Page
                                 function (Team $record) {
                                     $license = $record->licenses()->create($this->form->getState());
                                     $this->form->fill();
+
                                     return $license;
                                 }
                             ),
