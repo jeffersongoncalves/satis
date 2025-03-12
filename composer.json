@@ -8,12 +8,6 @@
         "framework"
     ],
     "license": "MIT",
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://community-license-manager.test"
-        }
-    ],
     "require": {
         "php": "^8.2",
         "composer/satis": "3.0.x-dev",
@@ -21,7 +15,8 @@
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
-        "livewire/livewire": "^3.0"
+        "livewire/livewire": "^3.0",
+        "shweshi/opengraph": "^1.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
