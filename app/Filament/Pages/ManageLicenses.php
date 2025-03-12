@@ -53,19 +53,26 @@ class ManageLicenses extends Page
                                 fn (Forms\Get $get) => match ($get('type')) {
                                     LicenseType::Composer => 'vendor/package',
                                     LicenseType::Individual => 'Nome do Produto',
+                                    LicenseType::Github => 'user/repo',
                                 }
                             )
                             ->rule(
                                 fn (Forms\Get $get): Closure => function (string $attribute, string $value, Closure $fail) use ($get) {
-                                    if ($get('type') !== LicenseType::Composer) {
-                                        return;
+                                    if ($get('type') === LicenseType::Composer) {
+                                        if (preg_match('/^[a-z0-9-]+\/[a-z0-9-]+$/', $value)) {
+                                            return;
+                                        }
+
+                                        $fail('O nome do pacote deve seguir o formato "vendor/package".');
                                     }
 
-                                    if (preg_match('/^[a-z0-9-]+\/[a-z0-9-]+$/', $value)) {
-                                        return;
-                                    }
+                                    if ($get('type') === LicenseType::Github) {
+                                        if (preg_match('/^[a-z0-9-]+\/[a-z0-9-]+$/', $value)) {
+                                            return;
+                                        }
 
-                                    $fail('O nome do pacote deve seguir o formato "vendor/package".');
+                                        $fail('O nome do pacote deve seguir o formato "user/repo".');
+                                    }
                                 },
                             )
                             ->required(),
@@ -90,14 +97,32 @@ class ManageLicenses extends Page
                                     ->content('Para adicionar uma licença do tipo Individual, você deve informar as credenciais de acesso ao produto. Cada membro do time receberá uma credencial de acesso individual. Não compartilhe essas credenciais com ninguém.')
                                     ->visible(fn (Forms\Get $get): bool => enum_equals($get('type'), LicenseType::Individual)),
 
+                                Forms\Components\Placeholder::make('github-instructions')
+                                    ->label('Configurações do GitHub')
+                                    ->content('Para adicionar uma licença do tipo GitHub, você deve informar a URL SSH do repositório privado e um Fine-grained Personal Access Token (PAT). Cada membro do time receberá uma credencial de acesso individual.')
+                                    ->visible(fn (Forms\Get $get): bool => enum_equals($get('type'), LicenseType::Github)),
+
                                 Forms\Components\TextInput::make('url')
                                     ->label(
                                         fn (Forms\Get $get) => match ($get('type')) {
                                             LicenseType::Composer => 'URL do Repositório Composer',
                                             LicenseType::Individual => 'URL do Produto',
+                                            LicenseType::Github => 'URL SSH do Repositório',
                                         }
                                     )
-                                    ->url()
+                                    ->rule(
+                                        fn (Forms\Get $get): Closure => function (string $attribute, string $value, Closure $fail) use ($get) {
+                                            if ($get('type') !== LicenseType::Github) {
+                                                return filter_var($value, FILTER_VALIDATE_URL);
+                                            }
+
+                                            if (preg_match('/^git@github.com:/', $value)) {
+                                                return;
+                                            }
+
+                                            $fail('Utilize uma URL SSH válida para o repositório do GitHub.');
+                                        },
+                                    )
                                     ->required()
                                     ->columnSpan(2),
 
@@ -109,6 +134,9 @@ class ManageLicenses extends Page
                                         }
                                     )
                                     ->required()
+                                    ->visible(
+                                        fn (Forms\Get $get): bool => ! enum_equals($get('type'), LicenseType::Github)
+                                    )
                                     ->columnStart(1),
 
                                 Forms\Components\TextInput::make('password')
@@ -116,10 +144,24 @@ class ManageLicenses extends Page
                                         fn (Forms\Get $get) => match ($get('type')) {
                                             LicenseType::Composer => 'Password do Composer',
                                             LicenseType::Individual => 'Senha de Acesso',
+                                            LicenseType::Github => 'Personal Access Token (PAT)',
                                         }
                                     )
                                     ->password()
                                     ->revealable()
+                                    ->rule(
+                                        fn (Forms\Get $get): Closure => function (string $attribute, string $value, Closure $fail) use ($get) {
+                                            if ($get('type') !== LicenseType::Github) {
+                                                return;
+                                            }
+
+                                            if (preg_match('/^github_pat_/', $value)) {
+                                                return;
+                                            }
+
+                                            $fail('O Personal Access Token (PAT) deve seguir o formato "github_pat_".');
+                                        },
+                                    )
                                     ->required(),
                             ]),
                     ])
@@ -158,34 +200,44 @@ class ManageLicenses extends Page
                                         fn (License $record) => match ($record->type) {
                                             LicenseType::Composer => 'URL do Repositório',
                                             LicenseType::Individual => 'URL do Produto',
+                                            LicenseType::Github => 'URL do Repositório',
                                         }
-                                    ),
+                                    )
+                                    ->copyable(),
 
                                 Infolists\Components\TextEntry::make('username')
                                     ->label(
                                         fn (License $record) => match ($record->type) {
-                                            LicenseType::Composer => 'Username',
                                             LicenseType::Individual => 'Email',
+                                            default => 'Username',
                                         }
                                     )
+                                    ->copyable()
                                     ->getStateUsing(
                                         fn (License $record) => match ($record->type) {
-                                            LicenseType::Composer => '[Redacted]',
                                             LicenseType::Individual => $record->username,
+                                            default => '[Redacted]',
+                                        }
+                                    )
+                                    ->visible(
+                                        fn (License $record) => match ($record->type) {
+                                            LicenseType::Github => false,
+                                            default => true,
                                         }
                                     ),
 
                                 Infolists\Components\TextEntry::make('password')
                                     ->label(
                                         fn (License $record) => match ($record->type) {
-                                            LicenseType::Composer => 'Password',
-                                            LicenseType::Individual => 'Senha',
+                                            LicenseType::Github => 'Personal Access Token',
+                                            default => 'Senha',
                                         }
                                     )
+                                    ->copyable()
                                     ->getStateUsing(
                                         fn (License $record) => match ($record->type) {
-                                            LicenseType::Composer => '[Redacted]',
                                             LicenseType::Individual => $record->password,
+                                            default => '[Redacted]',
                                         }
                                     ),
                             ]),

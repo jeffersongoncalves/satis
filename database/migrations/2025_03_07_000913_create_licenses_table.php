@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('type');
             $table->string('url');
-            $table->string('username');
+            $table->string('username')->nullable();
             $table->string('password');
 
             $table->foreignId('team_id')->constrained('teams')->cascadeOnDelete();

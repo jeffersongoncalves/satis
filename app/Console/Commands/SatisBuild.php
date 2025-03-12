@@ -18,21 +18,33 @@ class SatisBuild extends Command
     {
         $satisConfig = $filesystem->json(base_path('satis.json'));
 
+        $satisConfig['homepage'] = config('app.url');
+
         $licenses = License::query()
-            ->where('type', LicenseType::Composer)
-            ->get(['name', 'url', 'username', 'password']);
+            ->whereIn('type', [LicenseType::Composer, LicenseType::Github])
+            ->get();
 
         $repositories = $licenses->map(
             fn (License $license) => [
-                'type' => 'composer',
+                'type' => match ($license->type) {
+                    LicenseType::Composer => 'composer',
+                    LicenseType::Github => 'vcs',
+                },
                 'url' => $license->url,
-                'options' => [
-                    'http' => [
-                        'header' => [
-                            'Authorization: Basic '.base64_encode("{$license->username}:{$license->password}"),
+                'options' => match ($license->type) {
+                    LicenseType::Composer => [
+                        'http' => [
+                            'header' => [
+                                'Authorization: Basic '.base64_encode("{$license->username}:{$license->password}"),
+                            ],
                         ],
                     ],
-                ],
+                    LicenseType::Github => [
+                        'github-oauth' => [
+                            'github.com' => $license->password,
+                        ],
+                    ]
+                },
             ]
         );
 
@@ -55,6 +67,8 @@ class SatisBuild extends Command
         $this->warn('Building satis repository...');
 
         $process = Process::timeout(600)->run("php vendor/bin/satis build $configPath");
+
+        $filesystem->delete($configPath);
 
         if ($process->failed()) {
             $this->error('Failed to build satis repository.');

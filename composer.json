@@ -8,6 +8,12 @@
         "framework"
     ],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://community-license-manager.test"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "composer/satis": "3.0.x-dev",

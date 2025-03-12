@@ -8,8 +8,8 @@ class PackagesV2Controller
 {
     public function __invoke(string $vendor, string $package)
     {
-        $packages = File::json(storage_path("app/private/satis/p2/{$vendor}/{$package}.json"));
+        $package = File::json(storage_path("app/private/satis/p2/{$vendor}/{$package}.json"));
 
-        return response()->json($packages, 200);
+        return response()->json($package, 200);
     }
 }
