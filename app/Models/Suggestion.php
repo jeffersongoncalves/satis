@@ -35,6 +35,11 @@ class Suggestion extends Model
         $this->votes()->where('user_id', $user->id)->delete();
     }
 
+    public function upvoted(User $user): bool
+    {
+        return $this->votes()->where('user_id', $user->id)->exists();
+    }
+
     public function fetchImage(): void
     {
         $graph = OpenGraphFacade::fetch($this->url, true);

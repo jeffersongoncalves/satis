@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace App\Providers\Filament;
 
 use App\Filament\Pages;
 use App\Filament\Pages\Tenancy\EditTeam;
@@ -21,13 +21,14 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-class FilamentPanelProvider extends PanelProvider
+class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
             ->default()
             ->id('admin')
+            ->path('admin')
             ->login()
             ->profile()
             ->tenant(Team::class)
