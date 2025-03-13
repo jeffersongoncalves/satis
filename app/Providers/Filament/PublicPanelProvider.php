@@ -8,6 +8,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -24,8 +25,6 @@ class PublicPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->login()
-            ->registration()
             ->navigation(false)
             ->viteTheme('resources/css/filament/public/theme.css')
             ->discoverPages(
@@ -42,6 +41,14 @@ class PublicPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ]);
+            ])
+            ->renderHook(
+                name: PanelsRenderHook::GLOBAL_SEARCH_AFTER,
+                hook: fn () => view('filament.partials.login-button')
+            )
+            ->renderHook(
+                name: PanelsRenderHook::GLOBAL_SEARCH_AFTER,
+                hook: fn () => view('filament.partials.access-panel')
+            );
     }
 }

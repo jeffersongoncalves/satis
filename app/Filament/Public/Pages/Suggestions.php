@@ -7,7 +7,6 @@ use Filament\Infolists;
 use Filament\Infolists\Components\TextEntry\TextEntrySize;
 use Filament\Infolists\Infolist;
 use Filament\Pages\Page;
-use Filament\Support\Enums\ActionSize;
 use Illuminate\Contracts\Support\Htmlable;
 
 class Suggestions extends Page
@@ -15,6 +14,8 @@ class Suggestions extends Page
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $view = 'filament.pages.infolist';
+
+    protected $listeners = ['voted' => '$refresh'];
 
     public function getTitle(): string|Htmlable
     {
@@ -47,7 +48,7 @@ class Suggestions extends Page
                                     ->label(false)
                                     ->extraImgAttributes([
                                         'class' => 'rounded-xl',
-                                        'onerror' => "this.src = 'https://www.svgrepo.com/show/508699/landscape-placeholder.svg'",
+                                        'onerror' => sprintf("this.src = '%s'", asset('images/placeholder.svg')),
                                     ]),
                             ])->grow(false),
 
@@ -66,32 +67,9 @@ class Suggestions extends Page
 
                             Infolists\Components\Actions::make([])
                                 ->actions([
-                                    Infolists\Components\Actions\Action::make('upvote')
-                                        ->icon('heroicon-o-hand-thumb-up')
-                                        ->color('gray')
-                                        ->badge(
-                                            fn (Suggestion $record) => $record->votes_count
-                                        )
-                                        ->size(ActionSize::ExtraLarge)
-                                        ->action(
-                                            fn (Suggestion $record) => $record->upvote(auth()->user())
-                                        )
-                                        ->visible(
-                                            fn (Suggestion $record) => auth()->check() && ! $record->upvoted(auth()->user())
-                                        ),
-
-                                    Infolists\Components\Actions\Action::make('downvote')
-                                        ->icon('heroicon-o-hand-thumb-down')
-                                        ->badge(
-                                            fn (Suggestion $record) => $record->votes()->count()
-                                        )
-                                        ->size(ActionSize::ExtraLarge)
-                                        ->action(
-                                            fn (Suggestion $record) => $record->downvote(auth()->user())
-                                        )
-                                        ->visible(
-                                            fn (Suggestion $record) => auth()->check() && $record->upvoted(auth()->user())
-                                        ),
+                                    Suggestions\Actions\LoginToUpvote::make(),
+                                    Suggestions\Actions\Upvote::make(),
+                                    Suggestions\Actions\Unvote::make(),
                                 ])
                                 ->alignEnd()
                                 ->verticallyAlignCenter(),

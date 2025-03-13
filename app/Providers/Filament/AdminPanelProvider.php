@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Pages;
 use App\Filament\Pages\Tenancy\EditTeam;
 use App\Filament\Pages\Tenancy\RegisterTeam;
+use App\Http\Responses\FilamentLoginResponse;
 use App\Models\Team;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -70,7 +71,13 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 name: PanelsRenderHook::GLOBAL_SEARCH_AFTER,
-                hook: fn () => view('filament.partials.github-repo'),
-            );
+                hook: fn () => view('filament.partials.github-repo-button'),
+            )
+            ->bootUsing(function (): void {
+                $this->app->singleton(
+                    \Filament\Http\Responses\Auth\Contracts\LoginResponse::class,
+                    FilamentLoginResponse::class,
+                );
+            });
     }
 }
