@@ -31,6 +31,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->registration()
+            ->emailVerification()
             ->profile()
             ->tenant(Team::class)
             ->tenantRoutePrefix('teams')

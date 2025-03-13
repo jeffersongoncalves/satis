@@ -22,11 +22,13 @@ return new class extends Migration
         };
 
         tap(
-            User::create($credentials),
+            User::createQuietly($credentials),
             function (User $user): void {
                 $user->ownedTeams()->create([
                     'name' => 'Comunidade',
                 ]);
+
+                $user->touch('email_verified_at');
             }
         );
     }
