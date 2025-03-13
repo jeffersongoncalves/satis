@@ -37,7 +37,7 @@ class Unvote extends Action
         $this->size(ActionSize::ExtraLarge);
 
         $this->visible(
-            fn (Unvote $action, Suggestion $record): bool => auth()->check() && $record->upvoted(auth()->user())
+            fn (Suggestion $record): bool => auth()->check() && $record->can_receive_votes && $record->upvoted(auth()->user())
         );
     }
 }

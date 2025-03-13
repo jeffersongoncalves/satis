@@ -37,7 +37,7 @@ class Upvote extends Action
         $this->size(ActionSize::ExtraLarge);
 
         $this->visible(
-            fn (Suggestion $record): bool => auth()->check() && ! $record->upvoted(auth()->user())
+            fn (Suggestion $record): bool => auth()->check() && $record->can_receive_votes && ! $record->upvoted(auth()->user())
         );
     }
 }
