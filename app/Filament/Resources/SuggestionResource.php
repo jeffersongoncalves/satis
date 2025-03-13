@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\SuggestionVisibility;
 use App\Filament\Resources\SuggestionResource\Pages;
 use App\Models\Suggestion;
 use Filament\Forms;
@@ -35,6 +36,29 @@ class SuggestionResource extends Resource
                     ->label('URL')
                     ->url()
                     ->required(),
+
+                Forms\Components\Grid::make()
+                    ->schema([
+                        Forms\Components\ToggleButtons::make('can_receive_votes')
+                            ->label('Pode receber votos')
+                            ->options([
+                                true => 'Sim',
+                                false => 'Não',
+                            ])
+                            ->default(true)
+                            ->visible(
+                                fn () => auth()->user()->isAdmin()
+                            ),
+
+                        Forms\Components\ToggleButtons::make('visibility')
+                            ->label('Visibilidade')
+                            ->options(SuggestionVisibility::class)
+                            ->default(SuggestionVisibility::Public)
+                            ->visible(
+                                fn () => auth()->user()->isAdmin()
+                            ),
+
+                    ]),
             ]);
     }
 
@@ -45,6 +69,16 @@ class SuggestionResource extends Resource
                 Tables\Columns\ImageColumn::make('image_url')
                     ->label(false)
                     ->size(40),
+
+                Tables\Columns\TextColumn::make('visibility')
+                    ->label('Visibilidade')
+                    ->badge()
+                    ->action(
+                        fn (Suggestion $record) => $record->toggleVisibility()
+                    )
+                    ->extraCellAttributes([
+                        'class' => 'w-0',
+                    ]),
 
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nome')

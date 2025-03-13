@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\SuggestionVisibility;
 use App\Observers\SuggestionObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -18,11 +20,36 @@ class Suggestion extends Model
         'name',
         'url',
         'image_url',
+        'visibility',
+        'can_receive_votes',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'visibility' => SuggestionVisibility::class,
+            'can_receive_votes' => 'boolean',
+        ];
+    }
 
     public function votes(): HasMany
     {
         return $this->hasMany(SuggestionVote::class);
+    }
+
+    public function scopePublic(Builder $query): void
+    {
+        $query->where('visibility', SuggestionVisibility::Public);
+    }
+
+    public function toggleVisibility(): void
+    {
+        $this->update([
+            'visibility' => match ($this->visibility) {
+                SuggestionVisibility::Public => SuggestionVisibility::Private,
+                SuggestionVisibility::Private => SuggestionVisibility::Public,
+            },
+        ]);
     }
 
     public function upvote(User $user): void

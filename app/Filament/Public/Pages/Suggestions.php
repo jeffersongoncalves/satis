@@ -2,6 +2,7 @@
 
 namespace App\Filament\Public\Pages;
 
+use App\Filament\Resources\SuggestionResource;
 use App\Models\Suggestion;
 use Filament\Infolists;
 use Filament\Infolists\Components\TextEntry\TextEntrySize;
@@ -27,9 +28,16 @@ class Suggestions extends Page
         return 'Vote em qual próxima licença vamos adiquirir!';
     }
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            SuggestionResource\Actions\CreateSuggestion::make(),
+        ];
+    }
+
     public function infolist(Infolist $infolist): Infolist
     {
-        $suggestions = Suggestion::query()
+        $suggestions = Suggestion::public()
             ->withCount('votes')
             ->orderBy('votes_count', 'desc')
             ->get();
