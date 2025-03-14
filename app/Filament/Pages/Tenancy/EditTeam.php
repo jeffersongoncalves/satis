@@ -7,7 +7,6 @@ use App\Actions\InviteTeamMember;
 use App\Actions\RemoveTeamMember;
 use App\Models\TeamInvitation;
 use App\Models\User;
-use Closure;
 use Filament\AvatarProviders\UiAvatarsProvider;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -53,17 +52,6 @@ class EditTeam extends EditTenantProfile
                             ->label('Nome do time')
                             ->required()
                             ->columnSpanFull(),
-
-                        Forms\Components\TextInput::make('seats')
-                            ->label('Número de assentos')
-                            ->numeric()
-                            ->rule(
-                                fn (): Closure => function (string $attribute, int $value, Closure $fail) {
-                                    if ($value < ($count = $this->tenant->users->count())) {
-                                        $fail("O número de assentos deve ser maior ou igual ao número de membros do time ({$count}).");
-                                    }
-                                },
-                            ),
                     ])
                     ->footerActions([
                         Forms\Components\Actions\Action::make('save')
