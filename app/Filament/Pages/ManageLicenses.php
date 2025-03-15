@@ -194,7 +194,13 @@ class ManageLicenses extends Page
                             ->icon(fn(License $record) => $record->type->getIcon())
                             ->headerActions([
                                 Infolists\Components\Actions\Action::make('versions')
-                                    ->url(fn(License $record) => LicenseVersions::getUrl(['license' => $record->id])),
+                                    ->url(fn(License $record) => LicenseVersions::getUrl(['license' => $record->id]))
+                                    ->visible(
+                                        fn(License $record) => match ($record->type) {
+                                            LicenseType::Individual => false,
+                                            default => true,
+                                        }
+                                    ),
                             ])
                             ->columns(3)
                             ->schema([
