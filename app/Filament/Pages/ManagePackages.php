@@ -19,7 +19,7 @@ use function App\Support\tenant;
 
 class ManagePackages extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'heroicon-o-archive-box';
 
     protected static string $view = 'filament.pages.packages';
 
@@ -264,6 +264,11 @@ class ManagePackages extends Page
     public function getTitle(): string
     {
         return 'Gerenciar Pacotes';
+    }
+
+    public function getHeading(): string
+    {
+        return '';
     }
 
     public static function getNavigationLabel(): string
