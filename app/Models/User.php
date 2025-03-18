@@ -47,11 +47,6 @@ class User extends Authenticatable implements FilamentUser, HasCurrentTenantLabe
         ];
     }
 
-    public function isAdmin(): bool
-    {
-        return $this->id === 1;
-    }
-
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->allTeams()->isNotEmpty();
@@ -64,11 +59,7 @@ class User extends Authenticatable implements FilamentUser, HasCurrentTenantLabe
 
     public function getTenants(Panel $panel): array|Collection
     {
-        if ($this->allTeams()->contains(Team::first())) {
-            return $this->allTeams();
-        }
-
-        return $this->teams;
+        return $this->allTeams();
     }
 
     public function getCurrentTenantLabel(): string

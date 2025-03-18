@@ -23,7 +23,7 @@ class TeamPolicy
      */
     public function view(User $user, Team $team): bool
     {
-        return $user->belongsToTeam($team);
+        return $user->ownsTeam($team) || $user->belongsToTeam($team);
     }
 
     /**
@@ -31,7 +31,7 @@ class TeamPolicy
      */
     public function create(User $user): bool
     {
-        return $user->id === 1;
+        return true;
     }
 
     /**
@@ -43,33 +43,25 @@ class TeamPolicy
     }
 
     /**
-     * Determine whether the user can add team members.
-     */
-    public function addTeamMember(User $user, Team $team): bool
-    {
-        return $user->ownsTeam($team);
-    }
-
-    /**
-     * Determine whether the user can update team member permissions.
-     */
-    public function updateTeamMember(User $user, Team $team): bool
-    {
-        return $user->ownsTeam($team);
-    }
-
-    /**
-     * Determine whether the user can remove team members.
-     */
-    public function removeTeamMember(User $user, Team $team): bool
-    {
-        return $user->ownsTeam($team);
-    }
-
-    /**
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, Team $team): bool
+    {
+        return $user->ownsTeam($team);
+    }
+
+    /**
+     * Determine whether the user can restore the model.
+     */
+    public function restore(User $user, Team $team): bool
+    {
+        return $user->ownsTeam($team);
+    }
+
+    /**
+     * Determine whether the user can permanently delete the model.
+     */
+    public function forceDelete(User $user, Team $team): bool
     {
         return $user->ownsTeam($team);
     }

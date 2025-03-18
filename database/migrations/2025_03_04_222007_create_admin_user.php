@@ -8,26 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $credentials = match (app()->environment()) {
-            'production' => [
-                'name' => 'Admin',
-                'email' => 'admin@filamentbr.com.br',
-                'password' => '$2y$12$b.Wqe6s9L3t7gtcLzipfJOyhKiSoEmJfSYYhKMSAgo7uLPD15FHLa',
-            ],
-            default => [
-                'name' => 'Saade',
-                'email' => 'saade@laravel.local',
-                'password' => Hash::make('123123123'),
-            ],
-        };
+        $credentials = [
+            'name' => 'Admin',
+            'email' => 'admin@filamentphp.com.br',
+            'password' => match (app()->environment()) {
+                'production' => '$2y$12$b.Wqe6s9L3t7gtcLzipfJOyhKiSoEmJfSYYhKMSAgo7uLPD15FHLa',
+                default => Hash::make('password'),
+            },
+        ];
 
         tap(
-            User::createQuietly($credentials),
+            User::create($credentials),
             function (User $user): void {
-                $user->ownedTeams()->create([
-                    'name' => 'Comunidade',
-                ]);
-
                 $user->touch('email_verified_at');
             }
         );
