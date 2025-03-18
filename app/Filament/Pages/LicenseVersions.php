@@ -4,7 +4,6 @@ namespace App\Filament\Pages;
 
 use App\Models\License;
 use App\Models\Team;
-use Filament\Actions\Action;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Pages\Page;
@@ -34,19 +33,14 @@ class LicenseVersions extends Page
         $this->record = tenant(Team::class);
     }
 
+    public function getTitle(): string
+    {
+        return $this->license->name;
+    }
+
     public function getSubheading(): string
     {
         return 'Histórico de Versões';
-    }
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Action::make('back')
-                ->icon('heroicon-o-arrow-left')
-                ->link()
-                ->url(ManageLicenses::getUrl()),
-        ];
     }
 
     public function licenseVersionsInfolist(Infolist $infolist): Infolist

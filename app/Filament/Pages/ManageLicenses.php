@@ -195,7 +195,13 @@ class ManageLicenses extends Page
                             ->icon(fn (License $record) => $record->type->getIcon())
                             ->headerActions([
                                 Infolists\Components\Actions\Action::make('versions')
-                                    ->url(fn (License $record) => LicenseVersions::getUrl(['license' => $record->id]))
+                                    ->label('Histórico de Versões')
+                                    ->icon('heroicon-o-arrow-top-right-on-square')
+                                    ->link()
+                                    ->url(
+                                        url: fn (License $record) => LicenseVersions::getUrl(['license' => $record->id]),
+                                        shouldOpenInNewTab: true,
+                                    )
                                     ->visible(
                                         fn (License $record) => match ($record->type) {
                                             LicenseType::Individual => false,
