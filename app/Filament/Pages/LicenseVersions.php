@@ -4,13 +4,14 @@ namespace App\Filament\Pages;
 
 use App\Models\License;
 use App\Models\Team;
-use Cache;
 use Filament\Actions\Action;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Pages\Page;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Locked;
+
 use function App\Support\tenant;
 
 class LicenseVersions extends Page
@@ -33,17 +34,21 @@ class LicenseVersions extends Page
         $this->record = tenant(Team::class);
     }
 
-    public function getTitle(): string
+    public function getSubheading(): string
     {
-        return __('License Versions: :license', ['license' => $this->license->name]);
+        return 'Histórico de Versões';
     }
+
     protected function getHeaderActions(): array
     {
         return [
             Action::make('back')
+                ->icon('heroicon-o-arrow-left')
+                ->link()
                 ->url(ManageLicenses::getUrl()),
         ];
     }
+
     public function licenseVersionsInfolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -51,13 +56,17 @@ class LicenseVersions extends Page
             ->schema([
                 Infolists\Components\RepeatableEntry::make('versions')
                     ->label(false)
+                    ->contained(false)
                     ->schema([
                         Infolists\Components\Section::make()
                             ->columns()
                             ->schema([
-                                Infolists\Components\TextEntry::make('version'),
+                                Infolists\Components\TextEntry::make('version')
+                                    ->label('Versão')
+                                    ->badge(),
                                 Infolists\Components\TextEntry::make('time')
-                                    ->date(),
+                                    ->label('Data de Publicação')
+                                    ->dateTime('M j, Y H:i'),
                             ]),
                     ]),
             ]);
@@ -65,15 +74,14 @@ class LicenseVersions extends Page
 
     private function getVersions(): array
     {
-        return Cache::remember('license-' . $this->license->id, now()->addMinutes(60), function (): array {
-            $file = Storage::disk("local")->json("satis/p2/" . $this->license->name . ".json");
-            if (empty($file["packages"][$this->license->name])) {
-                return [
-                    'versions' => [],
-                ];
-            }
+        return Cache::remember("license-{$this->license->id}-versions", now()->addHour(), function (): array {
+            $file = app(Filesystem::class)->json("satis/p2/{$this->license->name}.json");
+
             return [
-                'versions' => collect($file["packages"][$this->license->name])->sortByDesc("version_normalized")->select(['version', 'time'])->toArray(),
+                'versions' => collect($file['packages'][$this->license->name])
+                    ->sortByDesc('version_normalized')
+                    ->select(['version', 'time'])
+                    ->toArray(),
             ];
         });
     }
