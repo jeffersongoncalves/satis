@@ -1,9 +1,0 @@
-@import "../../../../vendor/filament/filament/resources/css/theme.css";
-
-@config 'tailwind.config.js';
-
-.fi-topbar {
-    nav {
-        @apply bg-transparent dark:bg-transparent ring-0;
-    }
-}

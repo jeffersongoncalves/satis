@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Providers\Filament;
+namespace App\Providers;
 
 use App\Filament\Pages;
 use App\Filament\Pages\Tenancy\EditTeam;
 use App\Filament\Pages\Tenancy\RegisterTeam;
-use App\Http\Responses\FilamentLoginResponse;
 use App\Models\Team;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -22,14 +21,13 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-class AdminPanelProvider extends PanelProvider
+class FilamentPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
             ->login()
             ->registration()
             ->emailVerification()
@@ -74,12 +72,6 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 name: PanelsRenderHook::GLOBAL_SEARCH_AFTER,
                 hook: fn () => view('filament.partials.github-repo-button'),
-            )
-            ->bootUsing(function (): void {
-                $this->app->singleton(
-                    \Filament\Http\Responses\Auth\Contracts\LoginResponse::class,
-                    FilamentLoginResponse::class,
-                );
-            });
+            );
     }
 }
