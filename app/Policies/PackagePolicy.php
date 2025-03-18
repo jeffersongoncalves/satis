@@ -2,10 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\License;
+use App\Models\Package;
 use App\Models\User;
 
-class LicensePolicy
+class PackagePolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -18,7 +18,7 @@ class LicensePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, License $license): bool
+    public function view(User $user, Package $package): bool
     {
         return false;
     }
@@ -34,7 +34,7 @@ class LicensePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, License $license): bool
+    public function update(User $user, Package $package): bool
     {
         return false;
     }
@@ -42,7 +42,7 @@ class LicensePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, License $license): bool
+    public function delete(User $user, Package $package): bool
     {
         return false;
     }
@@ -50,7 +50,7 @@ class LicensePolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, License $license): bool
+    public function restore(User $user, Package $package): bool
     {
         return false;
     }
@@ -58,7 +58,7 @@ class LicensePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, License $license): bool
+    public function forceDelete(User $user, Package $package): bool
     {
         return false;
     }

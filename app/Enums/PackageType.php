@@ -5,7 +5,7 @@ namespace App\Enums;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum LicenseType: string implements HasIcon, HasLabel
+enum PackageType: string implements HasIcon, HasLabel
 {
     case Composer = 'composer';
     case Individual = 'individual';

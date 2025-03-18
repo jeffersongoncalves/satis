@@ -25,7 +25,7 @@ class Suggestions extends Page
 
     public function getSubheading(): string|Htmlable|null
     {
-        return 'Vote em qual próxima licença vamos adquirir!';
+        return 'Vote em qual próximo pacote vamos adquirir!';
     }
 
     protected function getHeaderActions(): array

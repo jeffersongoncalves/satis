@@ -26,7 +26,7 @@ class EnsureUserHasLicense
         [$name] = package_name("{$vendor}/{$package}");
 
         $teams = $user->teams()
-            ->whereHas('licenses', function (Builder $query) use ($name) {
+            ->whereHas('packages', function (Builder $query) use ($name) {
                 $query->where('name', $name);
             })
             ->get();

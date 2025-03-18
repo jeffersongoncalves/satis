@@ -1,3 +1,3 @@
 <x-filament-panels::page>
-    {{ $this->licenseVersionsInfolist }}
+    {{ $this->packageVersionsInfolist }}
 </x-filament-panels::page>

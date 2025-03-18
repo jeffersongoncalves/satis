@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Enums\LicenseType;
+use App\Enums\PackageType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class License extends Model
+class Package extends Model
 {
     protected $fillable = [
         'name',
@@ -19,12 +19,12 @@ class License extends Model
     protected function casts(): array
     {
         return [
-            'type' => LicenseType::class,
+            'type' => PackageType::class,
         ];
     }
 
     /**
-     * Get the team that the license belongs to.
+     * Get the team that the package belongs to.
      */
     public function team(): BelongsTo
     {

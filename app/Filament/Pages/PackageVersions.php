@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\License;
+use App\Models\Package;
 use App\Models\Team;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
@@ -13,20 +13,20 @@ use Livewire\Attributes\Locked;
 
 use function App\Support\tenant;
 
-class LicenseVersions extends Page
+class PackageVersions extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static string $view = 'filament.pages.license-versions';
+    protected static string $view = 'filament.pages.package-versions';
 
     protected static bool $shouldRegisterNavigation = false;
 
-    protected static ?string $slug = 'licenses/{license}/versions';
+    protected static ?string $slug = 'packages/{package}/versions';
 
     #[Locked]
     public ?Team $record = null;
 
-    public ?License $license = null;
+    public ?Package $package = null;
 
     public function mount(): void
     {
@@ -35,7 +35,7 @@ class LicenseVersions extends Page
 
     public function getTitle(): string
     {
-        return $this->license->name;
+        return $this->package->name;
     }
 
     public function getSubheading(): string
@@ -43,7 +43,7 @@ class LicenseVersions extends Page
         return 'Histórico de Versões';
     }
 
-    public function licenseVersionsInfolist(Infolist $infolist): Infolist
+    public function packageVersionsInfolist(Infolist $infolist): Infolist
     {
         return $infolist
             ->state($this->getVersions())
@@ -68,11 +68,11 @@ class LicenseVersions extends Page
 
     private function getVersions(): array
     {
-        return Cache::remember("license-{$this->license->id}-versions", now()->addHour(), function (): array {
-            $file = app(Filesystem::class)->json("satis/p2/{$this->license->name}.json");
+        return Cache::remember("package-{$this->package->id}-versions", now()->addHour(), function (): array {
+            $file = app(Filesystem::class)->json(storage_path("app/private/satis/p2/{$this->package->name}.json"));
 
             return [
-                'versions' => collect($file['packages'][$this->license->name])
+                'versions' => collect($file['packages'][$this->package->name])
                     ->sortByDesc('version_normalized')
                     ->select(['version', 'time'])
                     ->toArray(),

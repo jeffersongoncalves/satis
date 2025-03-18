@@ -91,10 +91,10 @@ class Team extends Model
     }
 
     /**
-     * Get all of the licenses for the team.
+     * Get all of the packages for the team.
      */
-    public function licenses(): HasMany
+    public function packages(): HasMany
     {
-        return $this->hasMany(License::class);
+        return $this->hasMany(Package::class);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\LicenseType;
-use App\Models\License;
+use App\Enums\PackageType;
+use App\Models\Package;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Process;
@@ -20,28 +20,28 @@ class SatisBuild extends Command
 
         $satisConfig['homepage'] = config('app.url');
 
-        $licenses = License::query()
-            ->whereIn('type', [LicenseType::Composer, LicenseType::Github])
+        $packages = Package::query()
+            ->whereIn('type', [PackageType::Composer, PackageType::Github])
             ->get();
 
-        $repositories = $licenses->map(
-            fn (License $license) => [
-                'type' => match ($license->type) {
-                    LicenseType::Composer => 'composer',
-                    LicenseType::Github => 'vcs',
+        $repositories = $packages->map(
+            fn (Package $package) => [
+                'type' => match ($package->type) {
+                    PackageType::Composer => 'composer',
+                    PackageType::Github => 'vcs',
                 },
-                'url' => $license->url,
-                'options' => match ($license->type) {
-                    LicenseType::Composer => [
+                'url' => $package->url,
+                'options' => match ($package->type) {
+                    PackageType::Composer => [
                         'http' => [
                             'header' => [
-                                'Authorization: Basic '.base64_encode("{$license->username}:{$license->password}"),
+                                'Authorization: Basic '.base64_encode("{$package->username}:{$package->password}"),
                             ],
                         ],
                     ],
-                    LicenseType::Github => [
+                    PackageType::Github => [
                         'github-oauth' => [
-                            'github.com' => $license->password,
+                            'github.com' => $package->password,
                         ],
                     ]
                 },
@@ -50,8 +50,8 @@ class SatisBuild extends Command
 
         $satisConfig['repositories'] = $repositories->toArray();
 
-        $require = $licenses->mapWithKeys(
-            fn (License $license) => [$license->name => '*']
+        $require = $packages->mapWithKeys(
+            fn (Package $package) => [$package->name => '*']
         );
 
         if ($require->isNotEmpty()) {

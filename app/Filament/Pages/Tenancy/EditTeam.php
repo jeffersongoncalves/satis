@@ -68,7 +68,7 @@ class EditTeam extends EditTenantProfile
         return $form
             ->schema([
                 Forms\Components\Section::make('Adicionar membro')
-                    ->description('Adicionar um novo membro ao time, permitindo que ele acesse as licenças e recursos do time.')
+                    ->description('Adicionar um novo membro ao time, permitindo que ele acesse os pacotes e recursos do time.')
                     ->aside()
                     ->columns(2)
                     ->schema([
