@@ -1,6 +1,6 @@
 <x-filament::button
     tag="a"
-    href="https://github.com/saade/filamentbr-community-licenses"
+    href="https://github.com/filamentphp-br/licenses"
     target="_blank"
     color="gray"
     icon="icon-github"
