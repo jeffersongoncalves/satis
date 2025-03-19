@@ -28,4 +28,9 @@ enum PackageType: string implements HasIcon, HasLabel
             self::Github => 'icon-github',
         };
     }
+
+    public static function of(int|string|self $value): static
+    {
+        return self::tryFrom($value instanceof self ? $value->value : $value);
+    }
 }

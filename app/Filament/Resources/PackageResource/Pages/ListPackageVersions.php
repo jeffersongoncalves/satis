@@ -37,6 +37,7 @@ class ListPackageVersions extends ViewRecord
                                 Infolists\Components\TextEntry::make('version')
                                     ->label('Versão')
                                     ->badge(),
+
                                 Infolists\Components\TextEntry::make('time')
                                     ->label('Data de Publicação')
                                     ->dateTime('M j, Y H:i'),
