@@ -12,7 +12,7 @@ class SatisBuild extends Command
 {
     protected $signature = 'satis:build';
 
-    protected $description = 'Builds the satis repository';
+    protected $description = 'Builds the Satis repository';
 
     public function handle(Filesystem $filesystem): int
     {
@@ -40,10 +40,10 @@ class SatisBuild extends Command
                         ],
                     ],
                     PackageType::Github => [
-                        "http-basic" => [
-                            "github.com" => [
-                                "username" => $package->username,
-                                "password" => $package->password,
+                        'http-basic' => [
+                            'github.com' => [
+                                'username' => $package->username,
+                                'password' => $package->password,
                             ],
                         ],
                     ]
