@@ -147,12 +147,10 @@ abstract class PackageResourceForm
                 fn (Forms\Get $get) => match (PackageType::of($get('type'))) {
                     PackageType::Composer => 'Username do Composer',
                     PackageType::Individual => 'Email de Acesso',
+                    PackageType::Github => 'Username ou Organização do GitHub',
                 }
             )
-            ->required()
-            ->visible(
-                fn (Forms\Get $get): bool => ! enum_equals($get('type'), PackageType::Github)
-            );
+            ->required();
     }
 
     public static function getPasswordFormComponent(): Forms\Components\Component

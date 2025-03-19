@@ -72,12 +72,6 @@ class ManagePackages extends ManageRecords
                                             PackageType::Individual => $record->username,
                                             default => '[Redacted]',
                                         }
-                                    )
-                                    ->visible(
-                                        fn (Package $record) => match ($record->type) {
-                                            PackageType::Github => false,
-                                            default => true,
-                                        }
                                     ),
 
                                 Infolists\Components\TextEntry::make('password')

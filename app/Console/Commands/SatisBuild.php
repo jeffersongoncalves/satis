@@ -40,8 +40,11 @@ class SatisBuild extends Command
                         ],
                     ],
                     PackageType::Github => [
-                        'github-oauth' => [
-                            'github.com' => $package->password,
+                        "http-basic" => [
+                            "github.com" => [
+                                "username" => $package->username,
+                                "password" => $package->password,
+                            ],
                         ],
                     ]
                 },
