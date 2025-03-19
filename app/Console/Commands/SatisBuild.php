@@ -2,85 +2,25 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\PackageType;
-use App\Models\Package;
+use App\Jobs\BuildSatisForTeamJob;
+use App\Models\Team;
 use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Process;
 
 class SatisBuild extends Command
 {
     protected $signature = 'satis:build';
 
-    protected $description = 'Builds the Satis repository';
+    protected $description = 'Builds the Satis repository for all teams';
 
-    public function handle(Filesystem $filesystem): int
+    public function handle(): int
     {
-        $satisConfig = $filesystem->json(base_path('satis.json'));
-
-        $satisConfig['homepage'] = config('app.url');
-
-        $packages = Package::query()
-            ->whereIn('type', [PackageType::Composer, PackageType::Github])
+        $teams = Team::query()
+            ->whereHas('packages')
             ->get();
 
-        $repositories = $packages->map(
-            fn (Package $package) => [
-                'type' => match ($package->type) {
-                    PackageType::Composer => 'composer',
-                    PackageType::Github => 'vcs',
-                },
-                'url' => match ($package->type) {
-                    PackageType::Github => str($package->url)
-                        ->prepend('https://')
-                        ->replaceFirst('git@', "{$package->username}:{$package->password}@")
-                        ->replaceLast(':', '/')
-                        ->toString(),
-                    default => $package->url
-                },
-                'options' => match ($package->type) {
-                    PackageType::Composer => [
-                        'http' => [
-                            'header' => [
-                                'Authorization: Basic '.base64_encode("{$package->username}:{$package->password}"),
-                            ],
-                        ],
-                    ],
-                    default => [],
-                },
-            ]
-        );
-
-        $satisConfig['repositories'] = $repositories->toArray();
-
-        $require = $packages->mapWithKeys(
-            fn (Package $package) => [$package->name => '*']
-        );
-
-        if ($require->isNotEmpty()) {
-            $satisConfig['require'] = (object) $require->toArray();
+        foreach ($teams as $team) {
+            dispatch(new BuildSatisForTeamJob($team));
         }
-
-        $configPath = storage_path('app/private/satis/config.json');
-
-        $filesystem->ensureDirectoryExists(dirname($configPath));
-        $filesystem->put($configPath, json_encode($satisConfig, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-
-        $this->info('Satis configuration file generated successfully');
-        $this->warn('Building satis repository...');
-
-        $process = Process::timeout(600)->run("php vendor/bin/satis build $configPath");
-
-        // $filesystem->delete($configPath);
-
-        if ($process->failed()) {
-            $this->error('Failed to build satis repository.');
-            $this->error($process->errorOutput());
-
-            return self::FAILURE;
-        }
-
-        $this->info('Satis repository built successfully!');
 
         return self::SUCCESS;
     }
