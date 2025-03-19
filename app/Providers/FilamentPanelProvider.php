@@ -37,6 +37,7 @@ class FilamentPanelProvider extends PanelProvider
             ->tenantRegistration(RegisterTeam::class)
             ->tenantProfile(EditTeam::class)
             ->topNavigation()
+            ->globalSearch(false)
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->routes(function () {
                 Route::get('teams/accept/{invitation}', Pages\AcceptInvitation::class)
