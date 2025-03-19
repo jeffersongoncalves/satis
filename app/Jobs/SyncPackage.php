@@ -7,47 +7,42 @@ use App\Data\Repository as RepositoryData;
 use App\Data\SatisConfig;
 use App\Enums\PackageType;
 use App\Models\Package;
-use App\Models\Team;
 use Illuminate\Contracts\Process\ProcessResult;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Process;
-use MichaelLedin\LaravelJob\FromParameters;
 use RuntimeException;
 
-class BuildSatisForTeamJob implements FromParameters, ShouldQueue
+class SyncPackage implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(protected Team $team) {}
+    public function __construct(protected Package $package) {}
 
     public function handle(): void
     {
         $config = SatisConfig::make();
         $config->homepage(config('app.url'));
+        $config->outputDir(storage_path("app/private/satis/{$this->package->team_id}/"));
 
-        /** @var Package $package */
-        foreach ($this->getPackages() as $package) {
-            $config->repository(
-                new RepositoryData(
-                    type: $this->getRepositoryType($package),
-                    url: $this->getRepositoryUrl($package),
-                    options: $this->getRepositoryOptions($package)
-                )
-            );
+        $config->repository(
+            new RepositoryData(
+                type: $this->getRepositoryType($this->package),
+                url: $this->getRepositoryUrl($this->package),
+                options: $this->getRepositoryOptions($this->package)
+            )
+        );
 
-            $config->require(
-                new PackageData(name: $package->name)
-            );
-        }
+        $config->require(
+            new PackageData(name: $this->package->name)
+        );
 
         $config->merge(
             SatisConfig::load(base_path('satis.json'))
         );
 
         $config->saveAs(
-            storage_path("app/private/satis/{$this->team->id}/config.json")
+            storage_path("app/private/satis/{$this->package->team_id}/package-{$this->package->id}.json")
         );
 
         tap(
@@ -62,25 +57,6 @@ class BuildSatisForTeamJob implements FromParameters, ShouldQueue
         );
 
         $config->delete();
-    }
-
-    private function getPackages(): Collection
-    {
-        return Package::query()
-            ->whereBelongsTo($this->team)
-            ->whereIn('type', [PackageType::Composer, PackageType::Github]) // TODO: Remove
-            ->get();
-    }
-
-    private function getRepositories(Collection $packages): array
-    {
-        return $packages->map(
-            fn (Package $package) => [
-                'type' => $this->getRepositoryType($package),
-                'url' => $this->getRepositoryUrl($package),
-                'options' => $this->getRepositoryOptions($package),
-            ]
-        )->toArray();
     }
 
     private function getRepositoryType(Package $package): string
@@ -115,17 +91,5 @@ class BuildSatisForTeamJob implements FromParameters, ShouldQueue
             ],
             default => [],
         };
-    }
-
-    private function getRequires(Collection $packages): array
-    {
-        return $packages->mapWithKeys(
-            fn (Package $package) => [$package->name => '*']
-        )->toArray();
-    }
-
-    public static function fromParameters(string ...$parameters)
-    {
-        return new self(Team::findOrFail($parameters[0]));
     }
 }

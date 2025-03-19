@@ -1,6 +1,5 @@
 {
     "name": "filamentphp-br/satis",
-    "output-dir": "storage/app/private/satis",
     "output-html": false,
     "archive": {
         "directory": "archives",

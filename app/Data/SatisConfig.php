@@ -53,6 +53,13 @@ class SatisConfig implements Stringable
         return $this;
     }
 
+    public function outputDir(string $dir): static
+    {
+        $this->config['output-dir'] = $dir;
+
+        return $this;
+    }
+
     public function repository(Repository $repository): static
     {
         $this->config['repositories'][] = $repository->toArray();

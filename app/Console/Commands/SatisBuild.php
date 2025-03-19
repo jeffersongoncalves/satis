@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\BuildSatisForTeamJob;
-use App\Models\Team;
+use App\Enums\PackageType;
+use App\Jobs\SyncPackage;
+use App\Models\Package;
 use Illuminate\Console\Command;
 
 class SatisBuild extends Command
@@ -14,12 +15,12 @@ class SatisBuild extends Command
 
     public function handle(): int
     {
-        $teams = Team::query()
-            ->whereHas('packages')
+        $packages = Package::query()
+            ->whereIn('type', [PackageType::Composer, PackageType::Github])
             ->get();
 
-        foreach ($teams as $team) {
-            dispatch(new BuildSatisForTeamJob($team));
+        foreach ($packages as $package) {
+            dispatch(new SyncPackage($package));
         }
 
         return self::SUCCESS;
