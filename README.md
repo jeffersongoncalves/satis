@@ -1,3 +1,19 @@
+# ⚠️ Disclaimer
+
+This package management system is provided "as is" without warranty of any kind, either expressed or implied, including but not limited to the implied warranties of merchantability and fitness for a particular purpose. The entire risk as to the quality and performance of the software is with you.
+
+By using Satis Package Manager, you acknowledge that:
+
+1. The creators and contributors of this project shall not be held liable for any damages, including but not limited to, direct, indirect, special, incidental, or consequential damages or loss of data resulting from the use or inability to use this software.
+
+2. You are responsible for ensuring that your use of this package management system complies with all applicable laws, regulations, and license agreements of the packages you manage through it.
+
+3. This tool does not guarantee the security, quality, or legality of any third-party packages it may help you manage or distribute.
+
+4. You will exercise appropriate caution when using this system in production environments and implement proper security measures.
+
+Use at your own risk.
+
 # SatisUI Package Manager
 
 A Filament application for managing PHP packages using Satis.
