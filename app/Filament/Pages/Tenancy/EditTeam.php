@@ -160,6 +160,9 @@ class EditTeam extends EditTenantProfile
                                             ->requiresConfirmation()
                                             ->action(
                                                 fn (User $record) => app(RemoveTeamMember::class)->remove($this->tenant, $record)
+                                            )
+                                            ->hidden(
+                                                fn (User $record) => $record->ownsTeam($this->tenant)
                                             ),
                                     ])
                                     ->verticallyAlignCenter()
