@@ -12,6 +12,7 @@ use Filament\Forms;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ManageRecords;
+use Illuminate\Support\Facades\Gate;
 
 use function App\Support\tenant;
 
@@ -26,7 +27,10 @@ class ManagePackages extends ManageRecords
         return [
             Actions\CreateAction::make()
                 ->slideOver()
-                ->modalWidth('2xl'),
+                ->modalWidth('2xl')
+                ->visible(
+                    fn () => auth()->user()->ownedTeams->contains(tenant(Team::class)),
+                ),
         ];
     }
 
@@ -107,6 +111,9 @@ class ManagePackages extends ManageRecords
                                     )
                                     ->action(
                                         fn (Package $record, array $data) => $record->update($data),
+                                    )
+                                    ->visible(
+                                        fn (Package $record) => Gate::allows('update', $record),
                                     ),
 
                                 Infolists\Components\Actions\Action::make('delete')
@@ -117,6 +124,9 @@ class ManagePackages extends ManageRecords
                                     ->requiresConfirmation()
                                     ->action(
                                         fn (Package $record) => $record->delete(),
+                                    )
+                                    ->visible(
+                                        fn (Package $record) => Gate::allows('delete', $record),
                                     ),
                             ])
                             ->footerActions([

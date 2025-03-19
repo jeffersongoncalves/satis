@@ -36,7 +36,7 @@ class PackagePolicy
      */
     public function update(User $user, Package $package): bool
     {
-        return true;
+        return $user->ownedTeams->contains($package->team);
     }
 
     /**
@@ -44,7 +44,7 @@ class PackagePolicy
      */
     public function delete(User $user, Package $package): bool
     {
-        return true;
+        return $user->ownedTeams->contains($package->team);
     }
 
     /**
@@ -52,7 +52,7 @@ class PackagePolicy
      */
     public function restore(User $user, Package $package): bool
     {
-        return true;
+        return $user->ownedTeams->contains($package->team);
     }
 
     /**
@@ -60,6 +60,6 @@ class PackagePolicy
      */
     public function forceDelete(User $user, Package $package): bool
     {
-        return true;
+        return $user->ownedTeams->contains($package->team);
     }
 }
