@@ -30,7 +30,14 @@ class SatisBuild extends Command
                     PackageType::Composer => 'composer',
                     PackageType::Github => 'vcs',
                 },
-                'url' => $package->url,
+                'url' => match ($package->type) {
+                    PackageType::Github => str($package->url)
+                        ->prepend('https://')
+                        ->replaceFirst('git@', "{$package->username}:{$package->password}@")
+                        ->replaceLast(':', '/')
+                        ->toString(),
+                    default => $package->url
+                },
                 'options' => match ($package->type) {
                     PackageType::Composer => [
                         'http' => [
@@ -39,14 +46,7 @@ class SatisBuild extends Command
                             ],
                         ],
                     ],
-                    PackageType::Github => [
-                        'http-basic' => [
-                            'github.com' => [
-                                'username' => $package->username,
-                                'password' => $package->password,
-                            ],
-                        ],
-                    ]
+                    default => [],
                 },
             ]
         );
@@ -71,7 +71,7 @@ class SatisBuild extends Command
 
         $process = Process::timeout(600)->run("php vendor/bin/satis build $configPath");
 
-        $filesystem->delete($configPath);
+        // $filesystem->delete($configPath);
 
         if ($process->failed()) {
             $this->error('Failed to build satis repository.');
