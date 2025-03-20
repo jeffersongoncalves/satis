@@ -14,8 +14,6 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Process;
 use RuntimeException;
 
-use function App\Support\email_slug;
-
 class SyncUserPackages implements ShouldQueue
 {
     use Queueable;
@@ -24,11 +22,9 @@ class SyncUserPackages implements ShouldQueue
 
     public function handle(): void
     {
-        $folderName = email_slug($this->user->email);
-
         $config = SatisConfig::make();
         $config->homepage(config('app.url'));
-        $config->outputDir(storage_path("app/private/satis/{$folderName}/"));
+        $config->outputDir(storage_path("app/private/satis/{$this->user->id}/"));
 
         $this->user->packages->each(function (Package $package) use ($config) {
             $config->repository(
@@ -49,7 +45,7 @@ class SyncUserPackages implements ShouldQueue
         );
 
         $config->saveAs(
-            storage_path("app/private/satis/{$folderName}/satis.json")
+            storage_path("app/private/satis/{$this->user->id}/satis.json")
         );
 
         tap(

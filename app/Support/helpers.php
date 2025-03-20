@@ -2,8 +2,6 @@
 
 namespace App\Support;
 
-use Illuminate\Support\Str;
-
 if (! function_exists('App\Support\tenant')) {
     /**
      * @template TValue
@@ -76,21 +74,6 @@ if (! function_exists('App\Support\package_name')) {
         preg_match('/^([^\/]+)\/([^~@+.\s]+)/', $value, $matches);
 
         return $matches;
-    }
-}
-
-if (! function_exists('App\Support\email_slug')) {
-    function email_slug(?string $email = null): ?string
-    {
-        if (! $email) {
-            return null;
-        }
-
-        return Str::slug(
-            title: $email,
-            separator: '_',
-            dictionary: ['@' => '_at_', '.' => '_dot_']
-        );
     }
 }
 
