@@ -17,7 +17,8 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.0",
-        "shweshi/opengraph": "^1.0"
+        "shweshi/opengraph": "^1.0",
+        "staudenmeir/eloquent-has-many-deep": "^1.21"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

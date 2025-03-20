@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Observers\TeamObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
+#[ObservedBy(TeamObserver::class)]
 class Team extends Model
 {
     /** @use HasFactory<\Database\Factories\TeamFactory> */

@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\PackageType;
-use App\Jobs\SyncPackage;
-use App\Models\Package;
+use App\Jobs\SyncUserPackages;
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class SatisBuild extends Command
@@ -15,12 +14,12 @@ class SatisBuild extends Command
 
     public function handle(): int
     {
-        $packages = Package::query()
-            ->whereIn('type', [PackageType::Composer, PackageType::Github])
+        $users = User::query()
+            ->whereHas('packages')
             ->get();
 
-        foreach ($packages as $package) {
-            dispatch(new SyncPackage($package));
+        foreach ($users as $user) {
+            dispatch(new SyncUserPackages($user));
         }
 
         return self::SUCCESS;

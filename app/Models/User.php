@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use App\Models\Contracts\HasTeams;
 use App\Observers\UserObserver;
 use Filament\Models\Contracts\FilamentUser;
@@ -18,6 +16,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
+use Staudenmeir\EloquentHasManyDeep\HasManyDeep;
 
 #[ObservedBy(UserObserver::class)]
 class User extends Authenticatable implements FilamentUser, HasCurrentTenantLabel, HasTenants, MustVerifyEmail
@@ -27,6 +26,7 @@ class User extends Authenticatable implements FilamentUser, HasCurrentTenantLabe
 
     use HasTeams;
     use Notifiable;
+    use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
 
     protected $fillable = [
         'name',
@@ -45,6 +45,11 @@ class User extends Authenticatable implements FilamentUser, HasCurrentTenantLabe
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function packages(): HasManyDeep
+    {
+        return $this->hasManyDeepFromRelations($this->teams(), (new Team)->packages());
     }
 
     public function canAccessPanel(Panel $panel): bool

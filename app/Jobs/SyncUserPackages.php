@@ -7,42 +7,49 @@ use App\Data\Repository as RepositoryData;
 use App\Data\SatisConfig;
 use App\Enums\PackageType;
 use App\Models\Package;
+use App\Models\User;
 use Illuminate\Contracts\Process\ProcessResult;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Process;
 use RuntimeException;
 
-class SyncPackage implements ShouldQueue
+use function App\Support\email_slug;
+
+class SyncUserPackages implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(protected Package $package) {}
+    public function __construct(protected User $user) {}
 
     public function handle(): void
     {
+        $folderName = email_slug($this->user->email);
+
         $config = SatisConfig::make();
         $config->homepage(config('app.url'));
-        $config->outputDir(storage_path("app/private/satis/{$this->package->team_id}/"));
+        $config->outputDir(storage_path("app/private/satis/{$folderName}/"));
 
-        $config->repository(
-            new RepositoryData(
-                type: $this->getRepositoryType($this->package),
-                url: $this->getRepositoryUrl($this->package),
-                options: $this->getRepositoryOptions($this->package)
-            )
-        );
+        $this->user->packages->each(function (Package $package) use ($config) {
+            $config->repository(
+                new RepositoryData(
+                    type: $this->getRepositoryType($package),
+                    url: $this->getRepositoryUrl($package),
+                    options: $this->getRepositoryOptions($package)
+                )
+            );
 
-        $config->require(
-            new PackageData(name: $this->package->name)
-        );
+            $config->require(
+                new PackageData(name: $package->name)
+            );
+        });
 
         $config->merge(
             SatisConfig::load(base_path('satis.json'))
         );
 
         $config->saveAs(
-            storage_path("app/private/satis/{$this->package->team_id}/package-{$this->package->id}.json")
+            storage_path("app/private/satis/{$folderName}/satis.json")
         );
 
         tap(
