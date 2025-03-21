@@ -61,9 +61,12 @@ class ListPackageVersions extends ViewRecord
 
     private function getVersions(): array
     {
-        return Cache::remember("package-{$this->record->id}-versions", now()->addMinutes(30), function (): array {
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        return Cache::remember("user-{$user->id}-package-{$this->record->id}-versions", now()->addMinutes(30), function () use ($user): array{
             $file = rescue(
-                fn (): array => app(Filesystem::class)->json(storage_path("app/private/satis/p2/{$this->record->name}.json")),
+                fn (): array => app(Filesystem::class)->json(storage_path("app/private/satis/{$user->id}/p2/{$this->record->name}.json")),
                 fn (): array => []
             );
 

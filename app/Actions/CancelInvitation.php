@@ -5,7 +5,7 @@ namespace App\Actions;
 use App\Models\Team;
 use App\Models\TeamInvitation;
 
-class Cancelnvitation
+class CancelInvitation
 {
     /**
      * Cancel the given team invitation.

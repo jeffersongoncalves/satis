@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages\Tenancy;
 
-use App\Actions\Cancelnvitation;
+use App\Actions\CancelInvitation;
 use App\Actions\InviteTeamMember;
 use App\Actions\RemoveTeamMember;
 use App\Models\TeamInvitation;
@@ -113,7 +113,7 @@ class EditTeam extends EditTenantProfile
                                             ->link()
                                             ->requiresConfirmation()
                                             ->action(
-                                                fn (TeamInvitation $record) => app(Cancelnvitation::class)->cancel($record)
+                                                fn (TeamInvitation $record) => app(CancelInvitation::class)->cancel($record)
                                             ),
                                     ])
                                     ->alignEnd(),

@@ -50,29 +50,12 @@ class ManagePackages extends ManageRecords
                             ->columns(3)
                             ->schema([
                                 Infolists\Components\TextEntry::make('url')
-                                    ->label(
-                                        fn (Package $record) => match ($record->type) {
-                                            PackageType::Composer => 'URL do Repositório',
-                                            PackageType::Individual => 'URL do Produto',
-                                            PackageType::Github => 'URL do Repositório',
-                                        }
-                                    )
+                                    ->label('URL do Repositório')
                                     ->copyable(),
 
                                 Infolists\Components\TextEntry::make('username')
-                                    ->label(
-                                        fn (Package $record) => match ($record->type) {
-                                            PackageType::Individual => 'Email',
-                                            default => 'Username',
-                                        }
-                                    )
-                                    ->copyable()
-                                    ->getStateUsing(
-                                        fn (Package $record) => match ($record->type) {
-                                            PackageType::Individual => $record->username,
-                                            default => '[Redacted]',
-                                        }
-                                    ),
+                                    ->label('Username')
+                                    ->getStateUsing('[Redacted]'),
 
                                 Infolists\Components\TextEntry::make('password')
                                     ->label(
@@ -81,13 +64,7 @@ class ManagePackages extends ManageRecords
                                             default => 'Senha',
                                         }
                                     )
-                                    ->copyable()
-                                    ->getStateUsing(
-                                        fn (Package $record) => match ($record->type) {
-                                            PackageType::Individual => $record->password,
-                                            default => '[Redacted]',
-                                        }
-                                    ),
+                                    ->getStateUsing('[Redacted]'),
                             ])
                             ->headerActions([
                                 Infolists\Components\Actions\Action::make('edit')
@@ -131,12 +108,6 @@ class ManagePackages extends ManageRecords
                                     ->url(
                                         url: fn (Package $record) => PackageResource::getUrl(name: 'versions', parameters: ['record' => $record]),
                                         shouldOpenInNewTab: true,
-                                    )
-                                    ->visible(
-                                        fn (Package $record) => match ($record->type) {
-                                            PackageType::Individual => false,
-                                            default => true,
-                                        }
                                     ),
                             ]),
                     ]),
