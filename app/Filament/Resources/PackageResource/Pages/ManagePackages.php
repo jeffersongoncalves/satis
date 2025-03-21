@@ -50,19 +50,12 @@ class ManagePackages extends ManageRecords
                             ->columns(3)
                             ->schema([
                                 Infolists\Components\TextEntry::make('url')
-                                    ->label(
-                                        fn (Package $record) => 'URL do Repositório'
-                                    )
+                                    ->label('URL do Repositório')
                                     ->copyable(),
 
                                 Infolists\Components\TextEntry::make('username')
-                                    ->label(
-                                        fn (Package $record) => 'Username'
-                                    )
-                                    ->copyable()
-                                    ->getStateUsing(
-                                        fn (Package $record) => '[Redacted]'
-                                    ),
+                                    ->label('Username')
+                                    ->getStateUsing('[Redacted]'),
 
                                 Infolists\Components\TextEntry::make('password')
                                     ->label(
@@ -71,10 +64,7 @@ class ManagePackages extends ManageRecords
                                             default => 'Senha',
                                         }
                                     )
-                                    ->copyable()
-                                    ->getStateUsing(
-                                        fn (Package $record) => '[Redacted]'
-                                    ),
+                                    ->getStateUsing('[Redacted]'),
                             ])
                             ->headerActions([
                                 Infolists\Components\Actions\Action::make('edit')
