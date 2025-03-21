@@ -21,7 +21,6 @@ abstract class PackageResourceForm
                     ->columns(2)
                     ->schema([
                         static::getComposerInstructionsFormComponent(),
-                        static::getIndividualInstructionsFormComponent(),
                         static::getGithubInstructionsFormComponent(),
                         static::getUrlFormComponent()->columnSpan(2),
                         static::getUsernameFormComponent(),
@@ -39,7 +38,6 @@ abstract class PackageResourceForm
                     ->columns(2)
                     ->schema([
                         static::getComposerInstructionsFormComponent(),
-                        static::getIndividualInstructionsFormComponent(),
                         static::getGithubInstructionsFormComponent(),
                         static::getUrlFormComponent()->columnSpan(2),
                         static::getUsernameFormComponent(),
@@ -54,7 +52,6 @@ abstract class PackageResourceForm
             ->label(
                 fn (Forms\Get $get) => match (PackageType::of($get('type'))) {
                     PackageType::Composer => 'vendor/package',
-                    PackageType::Individual => 'Nome do Produto',
                     PackageType::Github => 'user/repo',
                 }
             )
@@ -98,14 +95,6 @@ abstract class PackageResourceForm
             ->visible(fn (Forms\Get $get): bool => enum_equals($get('type'), PackageType::Composer));
     }
 
-    public static function getIndividualInstructionsFormComponent(): Forms\Components\Component
-    {
-        return Forms\Components\Placeholder::make('individual-instructions')
-            ->label('Configurações Individuais')
-            ->content('Para adicionar um pacote do tipo Individual, você deve informar as credenciais de acesso ao produto. Cada membro do time receberá uma credencial de acesso individual. Não compartilhe essas credenciais com ninguém.')
-            ->visible(fn (Forms\Get $get): bool => enum_equals($get('type'), PackageType::Individual));
-    }
-
     public static function getGithubInstructionsFormComponent(): Forms\Components\Component
     {
         return Forms\Components\Placeholder::make('github-instructions')
@@ -120,7 +109,6 @@ abstract class PackageResourceForm
             ->label(
                 fn (Forms\Get $get) => match (PackageType::of($get('type'))) {
                     PackageType::Composer => 'URL do Repositório Composer',
-                    PackageType::Individual => 'URL do Produto',
                     PackageType::Github => 'URL SSH do Repositório',
                 }
             )
@@ -146,7 +134,6 @@ abstract class PackageResourceForm
             ->label(
                 fn (Forms\Get $get) => match (PackageType::of($get('type'))) {
                     PackageType::Composer => 'Username do Composer',
-                    PackageType::Individual => 'Email de Acesso',
                     PackageType::Github => 'Username ou Organização do GitHub',
                 }
             )
@@ -159,7 +146,6 @@ abstract class PackageResourceForm
             ->label(
                 fn (Forms\Get $get) => match (PackageType::of($get('type'))) {
                     PackageType::Composer => 'Password do Composer',
-                    PackageType::Individual => 'Senha de Acesso',
                     PackageType::Github => 'Personal Access Token (PAT)',
                 }
             )

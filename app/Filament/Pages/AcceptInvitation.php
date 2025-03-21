@@ -3,7 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Actions\AddTeamMember;
-use App\Actions\Cancelnvitation;
+use App\Actions\CancelInvitation;
 use App\Models\TeamInvitation;
 use App\Models\User;
 use Filament\Actions\Action;
@@ -111,7 +111,7 @@ class AcceptInvitation extends SimplePage
             ]
         );
 
-        app(Cancelnvitation::class)->cancel($this->invitation);
+        app(CancelInvitation::class)->cancel($this->invitation);
 
         $this->redirect(Filament::getUrl($this->invitation->team));
     }

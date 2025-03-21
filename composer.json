@@ -22,7 +22,6 @@
         "laravel/horizon": "^5.31",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
-        "livewire/flux-pro": "^2.0",
         "livewire/livewire": "^3.0",
         "shweshi/opengraph": "^1.0",
         "staudenmeir/eloquent-has-many-deep": "^1.21"
