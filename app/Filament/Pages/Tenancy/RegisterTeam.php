@@ -23,7 +23,8 @@ class RegisterTeam extends RegisterTenant
 
     protected function handleRegistration(array $data): Model
     {
-        $user = User::find(1);
+        /** @var User $user */
+        $user = auth()->user();
 
         return $user->ownedTeams()->create($data);
     }
