@@ -8,7 +8,5 @@
     "config": {
         "secure-http": false
     },
-    "require-dependencies": true,
-    "require-dev-dependencies": true,
     "minimum-stability": "stable"
 }
