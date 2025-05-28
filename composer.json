@@ -8,14 +8,8 @@
         "framework"
     ],
     "license": "MIT",
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://satis.test"
-        }
-    ],
     "require": {
-        "php": "^8.2",
+        "php": "^8.4",
         "composer/satis": "3.0.x-dev",
         "filament/filament": "^3.2",
         "laravel/framework": "^12.0",
@@ -55,18 +49,17 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
-            "@php artisan filament:upgrade"
+            "@php artisan icons:cache"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan filament:upgrade"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "@php artisan key:generate --ansi",
-            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-            "@php artisan migrate --graceful --ansi"
+            "@php artisan key:generate --ansi"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
@@ -78,7 +71,7 @@
         ],
         "queue": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd\" \"php artisan queue:listen --tries=1\" --names=queue"
+            "npx concurrently -c \"#93c5fd\" \"php artisan queue:listen --tries=1 --timeout=3600\" --names=queue"
         ]
     },
     "extra": {
@@ -94,6 +87,10 @@
             "composer/satis": true,
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "platform": {
+            "ext-pcntl": "7.1",
+            "ext-posix": "7.1"
         }
     },
     "minimum-stability": "stable",

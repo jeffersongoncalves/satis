@@ -98,6 +98,6 @@ class Team extends Model
      */
     public function packages(): HasMany
     {
-        return $this->hasMany(Package::class);
+        return $this->hasMany(Package::class)->orderBy('name');
     }
 }

@@ -8,17 +8,17 @@ use App\Data\SatisConfig;
 use App\Enums\PackageType;
 use App\Models\Package;
 use App\Models\User;
-use Illuminate\Contracts\Process\ProcessResult;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Process;
-use RuntimeException;
 
 class SyncUserPackages implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(protected User $user) {}
+    public function __construct(protected User $user)
+    {
+        $this->user->load('packages');
+    }
 
     public function handle(): void
     {
@@ -29,6 +29,7 @@ class SyncUserPackages implements ShouldQueue
         $this->user->packages->each(function (Package $package) use ($config) {
             $config->repository(
                 new RepositoryData(
+                    name: $package->name,
                     type: $this->getRepositoryType($package),
                     url: $this->getRepositoryUrl($package),
                     options: $this->getRepositoryOptions($package)
@@ -48,18 +49,9 @@ class SyncUserPackages implements ShouldQueue
             storage_path("app/private/satis/{$this->user->id}/satis.json")
         );
 
-        tap(
-            Process::timeout(600)->run("php vendor/bin/satis build {$config->path}"),
-            function (ProcessResult $process) {
-                if ($process->successful()) {
-                    return;
-                }
-
-                $this->fail(new RuntimeException($process->errorOutput()));
-            }
-        );
-
-        $config->delete();
+        $this->user->packages->each(function (Package $package) use ($config) {
+            ProcessSatisByPathAndRepositoryUrl::dispatch($config->path, $this->getRepositoryUrl($package));
+        });
     }
 
     private function getRepositoryType(Package $package): string
@@ -88,7 +80,7 @@ class SyncUserPackages implements ShouldQueue
             PackageType::Composer => [
                 'http' => [
                     'header' => [
-                        'Authorization: Basic '.base64_encode("{$package->username}:{$package->password}"),
+                        'Authorization: Basic ' . base64_encode("{$package->username}:{$package->password}"),
                     ],
                 ],
             ],

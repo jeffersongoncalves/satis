@@ -19,7 +19,7 @@ class SatisBuild extends Command
             ->get();
 
         foreach ($users as $user) {
-            dispatch(new SyncUserPackages($user));
+            SyncUserPackages::dispatch($user);
         }
 
         return self::SUCCESS;

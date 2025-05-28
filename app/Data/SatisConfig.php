@@ -8,11 +8,12 @@ use function App\Support\array_merge_recursive_unique;
 
 class SatisConfig implements Stringable
 {
-    public protected(set) array $config = [];
+    protected array $config = [];
 
     protected function __construct(
-        public protected(set) ?string $path = null
-    ) {}
+        public ?string $path = null
+    ) {
+    }
 
     public static function make(): static
     {
